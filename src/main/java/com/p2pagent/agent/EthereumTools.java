@@ -2,6 +2,10 @@ package com.p2pagent.agent;
 
 import dev.langchain4j.agent.tool.Tool;
 import org.springframework.stereotype.Component;
+import org.web3j.utils.Convert;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Component
 public class EthereumTools {
@@ -12,13 +16,15 @@ public class EthereumTools {
         this.ethereumService = ethereumService;
     }
 
-    @Tool("Returns ETH balance in wei for a given Ethereum address")
+    @Tool("Returns ETH balance for an Ethereum address")
     public String getBalance(String address) {
         try {
-            return ethereumService.getBalance(address).toString();
+            BigInteger wei = ethereumService.getBalance(address);
+            BigDecimal eth = Convert.fromWei(new BigDecimal(wei), Convert.Unit.ETHER);
+            return eth + " ETH";
         } catch (Exception e) {
-            e.printStackTrace(); // 👈 IMPORTANT
-            return "ERROR: " + e.getClass().getSimpleName() + " - " + e.getMessage();
+            e.printStackTrace();
+            return "FAILED_TO_FETCH_BALANCE";
         }
     }
 }
