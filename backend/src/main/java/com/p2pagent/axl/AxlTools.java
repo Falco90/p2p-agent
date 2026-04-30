@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent.axl;
 
 import dev.langchain4j.agent.tool.Tool;
 import org.springframework.stereotype.Component;

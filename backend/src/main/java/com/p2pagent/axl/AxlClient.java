@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent.axl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
-package com.p2pagent.agent;
+package com.p2pagent;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AgentApplicationTests {
+class P2PAgentApplicationTests {
 
 	@Test
 	void contextLoads() {

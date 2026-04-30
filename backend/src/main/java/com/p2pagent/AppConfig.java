@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent.axl;
 
 public class AxlMessage {
 

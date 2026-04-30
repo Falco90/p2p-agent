@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent.web3;
 
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;

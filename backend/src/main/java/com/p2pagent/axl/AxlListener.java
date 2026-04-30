@@ -1,4 +1,4 @@
-package com.p2pagent.agent;
+package com.p2pagent.axl;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
