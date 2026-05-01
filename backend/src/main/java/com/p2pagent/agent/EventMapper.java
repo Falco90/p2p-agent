@@ -22,11 +22,16 @@ public class EventMapper {
             case SERVICE_REQUEST ->
                     OrderEvent.request(msg, localPeerId);
 
-            case PAYMENT ->
+            case ORDER_ACCEPTED -> OrderEvent.accepted(msg, localPeerId);
+
+            case PAYMENT_SENT ->
                     OrderEvent.payment(msg, localPeerId);
 
-            default ->
-                    OrderEvent.ignore(msg, localPeerId);
+            case ORDER_COMPLETED -> OrderEvent.completed(msg, localPeerId);
+
+            default -> throw new IllegalArgumentException(
+                    "Unhandled message type: " + msg.type()
+            );
         };
     }
 }

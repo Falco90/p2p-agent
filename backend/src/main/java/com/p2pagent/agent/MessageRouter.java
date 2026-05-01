@@ -24,9 +24,10 @@ public class MessageRouter {
         switch (msg.type()) {
 
             case SERVICE_REQUEST,
-                 PAYMENT,
+                 PAYMENT_SENT,
                  QUOTE,
-                 ORDER_ACCEPTED -> {
+                 ORDER_ACCEPTED,
+                 ORDER_COMPLETED -> {
 
                 OrderEvent event = eventMapper.toEvent(msg);
                 orderService.handleEvent(event);

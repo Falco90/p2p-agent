@@ -27,6 +27,7 @@ public record OrderEvent(
         SERVICE_REQUEST,
         QUOTE_SENT,
         ORDER_ACCEPTED,
+        ORDER_COMPLETED,
         PAYMENT_SENT,
         PAYMENT_CONFIRMED,
         CANCELLED,
@@ -37,6 +38,17 @@ public record OrderEvent(
         return new OrderEvent(
                 msg.orderId(),
                 OrderEventType.SERVICE_REQUEST,
+                msg.payload(),
+                msg.fromPeerId(),
+                localPeerId,
+                Instant.now()
+        );
+    }
+
+    public static OrderEvent accepted(AgentMessage msg, String localPeerId) {
+        return new OrderEvent(
+                msg.orderId(),
+                OrderEventType.ORDER_ACCEPTED,
                 msg.payload(),
                 msg.fromPeerId(),
                 localPeerId,
@@ -55,10 +67,10 @@ public record OrderEvent(
         );
     }
 
-    public static OrderEvent ignore(AgentMessage msg, String localPeerId) {
+    public static OrderEvent completed(AgentMessage msg, String localPeerId) {
         return new OrderEvent(
                 msg.orderId(),
-                OrderEventType.ORDER_STATUS,
+                OrderEventType.ORDER_COMPLETED,
                 msg.payload(),
                 msg.fromPeerId(),
                 localPeerId,

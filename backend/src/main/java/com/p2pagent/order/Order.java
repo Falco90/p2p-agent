@@ -38,6 +38,8 @@ public class Order {
 
             case PAYMENT_CONFIRMED -> setState(OrderState.PAID);
 
+            case ORDER_COMPLETED -> setState(OrderState.COMPLETED);
+
             default -> {
             }
         }
