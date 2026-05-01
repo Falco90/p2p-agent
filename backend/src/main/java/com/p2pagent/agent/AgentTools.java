@@ -8,13 +8,15 @@ import java.time.LocalTime;
 
 @Component
 public class AgentTools {
+    private final AgentService agentService;
 
-    /**
-     * This tool is available to {@link Agent}
-     */
-    @Tool
-    @Observed
-    public String currentTime() {
-        return LocalTime.now().toString();
+    public AgentTools(AgentService agentService) {
+        this.agentService = agentService;
+    }
+
+    @Tool("Request a service from another agent. Provide peerId and what you want.")
+    public String requestService(String peerId, String description) {
+
+        return agentService.requestService(peerId, description);
     }
 }
