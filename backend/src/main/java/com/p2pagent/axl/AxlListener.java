@@ -1,5 +1,8 @@
 package com.p2pagent.axl;
 
+import com.p2pagent.agent.AgentMessage;
+import com.p2pagent.agent.MessageParser;
+import com.p2pagent.agent.MessageRouter;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
@@ -8,10 +11,14 @@ import org.springframework.stereotype.Component;
 public class AxlListener {
 
     private final AxlClient axlClient;
+    private final MessageParser messageParser;
+    private final MessageRouter messageRouter;
     private volatile boolean running = true;
 
-    public AxlListener(AxlClient axlClient) {
+    public AxlListener(AxlClient axlClient, MessageParser messageParser, MessageRouter messageRouter) {
         this.axlClient = axlClient;
+        this.messageParser = messageParser;
+        this.messageRouter = messageRouter;
     }
 
     @PostConstruct
@@ -27,7 +34,7 @@ public class AxlListener {
                 if (msg != null) {
                     handle(msg);
                 } else {
-                    Thread.sleep(200); // queue empty → backoff
+                    Thread.sleep(200);
                 }
 
             } catch (Exception e) {
@@ -37,10 +44,17 @@ public class AxlListener {
         }
     }
 
-    private void handle(AxlMessage msg) {
+    private void handle(AxlMessage axlMessage) throws Exception {
         System.out.println("Message received");
-        System.out.println("From: " + msg.getFromPeerId());
-        System.out.println("Body: " + msg.getBody());
+        System.out.println("From: " + axlMessage.fromPeerId());
+        System.out.println("Body: " + axlMessage.body());
+
+        AgentMessage agentMessage = messageParser.parse(
+                axlMessage.body(),
+                axlMessage.fromPeerId()
+        );
+
+        messageRouter.route(agentMessage);
 
     }
 
