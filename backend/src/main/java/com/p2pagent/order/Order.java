@@ -26,8 +26,6 @@ public class Order {
         this.updatedAt = Instant.now();
     }
 
-    // --- business logic ---
-
     public void apply(OrderEvent event) {
 
         switch (event.type()) {
@@ -41,13 +39,12 @@ public class Order {
             case PAYMENT_CONFIRMED -> setState(OrderState.PAID);
 
             default -> {
-                // ignore or log
             }
         }
     }
 
     private void handleServiceRequest(OrderEvent event) {
-        this.item = event.payload(); // simplified parsing
+        this.item = event.payload();
         setState(OrderState.QUOTED);
     }
 
@@ -59,8 +56,6 @@ public class Order {
         this.state = newState;
         this.updatedAt = Instant.now();
     }
-
-    // --- getters ---
 
     public String getId() {
         return id;

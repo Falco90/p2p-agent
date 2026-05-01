@@ -33,35 +33,35 @@ public record OrderEvent(
         ORDER_STATUS
     }
 
-    public static OrderEvent request(AgentMessage msg) {
+    public static OrderEvent request(AgentMessage msg, String localPeerId) {
         return new OrderEvent(
                 msg.orderId(),
                 OrderEventType.SERVICE_REQUEST,
                 msg.payload(),
                 msg.fromPeerId(),
-                msg.toPeerId(),
+                localPeerId,
                 Instant.now()
         );
     }
 
-    public static OrderEvent payment(AgentMessage msg) {
+    public static OrderEvent payment(AgentMessage msg, String localPeerId) {
         return new OrderEvent(
                 msg.orderId(),
                 OrderEventType.PAYMENT_SENT,
                 msg.payload(),
                 msg.fromPeerId(),
-                msg.toPeerId(),
+                localPeerId,
                 Instant.now()
         );
     }
 
-    public static OrderEvent ignore(AgentMessage msg) {
+    public static OrderEvent ignore(AgentMessage msg, String localPeerId) {
         return new OrderEvent(
                 msg.orderId(),
                 OrderEventType.ORDER_STATUS,
                 msg.payload(),
                 msg.fromPeerId(),
-                msg.toPeerId(),
+                localPeerId,
                 Instant.now()
         );
     }
