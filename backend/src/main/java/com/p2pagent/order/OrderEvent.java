@@ -7,7 +7,7 @@ import java.time.Instant;
 public record OrderEvent(
         String orderId,
         OrderEventType type,
-        String payload,
+        Object payload,
         String fromPeerId,
         String toPeerId,
         Instant timestamp
@@ -16,7 +16,7 @@ public record OrderEvent(
     public OrderEvent(
             String orderId,
             OrderEventType type,
-            String payload,
+            Object payload,
             String fromPeerId,
             String toPeerId
     ) {
@@ -28,16 +28,16 @@ public record OrderEvent(
         QUOTE_SENT,
         ORDER_ACCEPTED,
         ORDER_COMPLETED,
-        PAYMENT_SENT,
         PAYMENT_CONFIRMED,
         CANCELLED,
         ORDER_STATUS
     }
 
-    public static OrderEvent request(AgentMessage msg, String localPeerId) {
+    public static OrderEvent fromAgentMessage(AgentMessage msg, String localPeerId) {
+
         return new OrderEvent(
                 msg.orderId(),
-                OrderEventType.SERVICE_REQUEST,
+                mapType(msg.type()),
                 msg.payload(),
                 msg.fromPeerId(),
                 localPeerId,
@@ -45,36 +45,15 @@ public record OrderEvent(
         );
     }
 
-    public static OrderEvent accepted(AgentMessage msg, String localPeerId) {
-        return new OrderEvent(
-                msg.orderId(),
-                OrderEventType.ORDER_ACCEPTED,
-                msg.payload(),
-                msg.fromPeerId(),
-                localPeerId,
-                Instant.now()
-        );
-    }
+    private static OrderEventType mapType(com.p2pagent.shared.MessageType type) {
 
-    public static OrderEvent payment(AgentMessage msg, String localPeerId) {
-        return new OrderEvent(
-                msg.orderId(),
-                OrderEventType.PAYMENT_SENT,
-                msg.payload(),
-                msg.fromPeerId(),
-                localPeerId,
-                Instant.now()
-        );
-    }
-
-    public static OrderEvent completed(AgentMessage msg, String localPeerId) {
-        return new OrderEvent(
-                msg.orderId(),
-                OrderEventType.ORDER_COMPLETED,
-                msg.payload(),
-                msg.fromPeerId(),
-                localPeerId,
-                Instant.now()
-        );
+        return switch (type) {
+            case SERVICE_REQUEST -> OrderEventType.SERVICE_REQUEST;
+            case ORDER_ACCEPTED -> OrderEventType.ORDER_ACCEPTED;
+            case PAYMENT_CONFIRMED -> OrderEventType.PAYMENT_CONFIRMED;
+            case ORDER_COMPLETED -> OrderEventType.ORDER_COMPLETED;
+            case CANCELLED -> OrderEventType.CANCELLED;
+            default -> OrderEventType.ORDER_STATUS;
+        };
     }
 }

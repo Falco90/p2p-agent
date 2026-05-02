@@ -1,5 +1,11 @@
 package com.p2pagent.order;
 
+import com.p2pagent.order.payload.OrderAcceptedPayload;
+import com.p2pagent.order.payload.ServiceRequestPayload;
+import com.p2pagent.order.payload.PaymentConfirmedPayload;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 
 public class Order {
@@ -12,7 +18,10 @@ public class Order {
 
     private String item;
     private int quantity;
-    private double price;
+
+    private BigDecimal priceEth;
+    private String sellerWalletAddress;
+    private String txHash;
 
     private final Instant createdAt;
     private Instant updatedAt;
@@ -30,28 +39,30 @@ public class Order {
 
         switch (event.type()) {
 
-            case SERVICE_REQUEST -> handleServiceRequest(event);
+            case SERVICE_REQUEST -> {
+                ServiceRequestPayload p = (ServiceRequestPayload) event.payload();
+                this.item = p.item();
+                this.quantity = p.quantity();
+                setState(OrderState.QUOTED);
+            }
 
-            case PAYMENT_SENT -> handlePayment(event);
+            case ORDER_ACCEPTED -> {
+                OrderAcceptedPayload p = (OrderAcceptedPayload) event.payload();
+                this.sellerWalletAddress = p.paymentAddress();
+                this.priceEth = new BigDecimal(p.priceEth());
+                setState(OrderState.ACCEPTED);
+            }
 
-            case ORDER_ACCEPTED -> setState(OrderState.ACCEPTED);
-
-            case PAYMENT_CONFIRMED -> setState(OrderState.PAID);
+            case PAYMENT_CONFIRMED -> {
+                PaymentConfirmedPayload p = (PaymentConfirmedPayload) event.payload();
+                this.txHash = p.txHash();
+                setState(OrderState.PAID);
+            }
 
             case ORDER_COMPLETED -> setState(OrderState.COMPLETED);
 
-            default -> {
-            }
+            default -> {}
         }
-    }
-
-    private void handleServiceRequest(OrderEvent event) {
-        this.item = event.payload();
-        setState(OrderState.QUOTED);
-    }
-
-    private void handlePayment(OrderEvent event) {
-        setState(OrderState.PAID);
     }
 
     private void setState(OrderState newState) {
@@ -59,41 +70,21 @@ public class Order {
         this.updatedAt = Instant.now();
     }
 
-    public String getId() {
-        return id;
+    public BigInteger getPriceWei() {
+        return priceEth == null
+                ? BigInteger.ZERO
+                : priceEth.movePointRight(18).toBigInteger();
     }
 
-    public String getBuyerPeerId() {
-        return buyerPeerId;
-    }
-
-    public String getSellerPeerId() {
-        return sellerPeerId;
-    }
-
-    public OrderState getState() {
-        return state;
-    }
-
-    public String getItem() {
-        return item;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+    public String getId() { return id; }
+    public String getBuyerPeerId() { return buyerPeerId; }
+    public String getSellerPeerId() { return sellerPeerId; }
+    public OrderState getState() { return state; }
+    public String getItem() { return item; }
+    public int getQuantity() { return quantity; }
+    public BigDecimal getPriceEth() { return priceEth; }
+    public String getSellerWalletAddress() { return sellerWalletAddress; }
+    public String getTxHash() { return txHash; }
 
     public enum OrderState {
         NEW,
