@@ -15,17 +15,20 @@ public class WalletService {
     private final String basePath;
     private final String password;
     private final String peerId;
+    private final String role;
 
     private Credentials credentials;
 
     public WalletService(
             @Value("${wallet.base-path}") String basePath,
             @Value("${wallet.password}") String password,
-            @Value("${axl.peerId}") String peerId
+            @Value("${axl.peerId}") String peerId,
+            @Value("${agent.role}") String role
     ) {
         this.basePath = basePath;
         this.password = password;
         this.peerId = peerId;
+        this.role = role;
     }
 
     @PostConstruct
@@ -41,7 +44,7 @@ public class WalletService {
             File walletFile = new File(walletPath);
 
             if (!walletFile.exists()) {
-                System.out.println("No wallet found for " + peerId + ", creating one...");
+                System.out.println("No wallet found for " + role + " with peerId " + peerId + ", creating one...");
 
                 String generatedFile = WalletUtils.generateNewWalletFile(
                         password,
@@ -61,7 +64,7 @@ public class WalletService {
 
             this.credentials = WalletUtils.loadCredentials(password, walletPath);
 
-            System.out.println("Wallet loaded for agent: " + peerId);
+            System.out.println("Wallet loaded for " + role + " with peerId " + peerId);
             System.out.println("Address: " + getAddress());
 
         } catch (Exception e) {
