@@ -1,10 +1,16 @@
 package com.p2pagent.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.p2pagent.axl.AxlClient;
 import com.p2pagent.axl.AxlProperties;
+import com.p2pagent.order.payload.*;
+import com.p2pagent.payment.Payment;
+import com.p2pagent.payment.PaymentService;
+import com.p2pagent.web3.WalletService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -12,20 +18,36 @@ public class OrderService {
 
     private final AxlClient axlClient;
     private final String peerId;
-
-    public OrderService(AxlClient axlClient, AxlProperties axlProperties) {
-        this.axlClient = axlClient;
-        this.peerId = axlProperties.getPeerId();
-    }
+    private final PaymentService paymentService;
+    private final WalletService walletService;
+    private final ObjectMapper objectMapper;
 
     private final Map<String, Order> orders = new ConcurrentHashMap<>();
+
+    public OrderService(AxlClient axlClient,
+                        AxlProperties axlProperties,
+                        PaymentService paymentService,
+                        WalletService walletService,
+                        ObjectMapper objectMapper) {
+
+        this.axlClient = axlClient;
+        this.peerId = axlProperties.getPeerId();
+        this.paymentService = paymentService;
+        this.walletService = walletService;
+        this.objectMapper = objectMapper;
+    }
 
     public void handleEvent(OrderEvent event) {
 
         Order order = orders.computeIfAbsent(
                 event.orderId(),
-                id -> createOrderFromEvent(event)
+                id -> createOrder(event)
         );
+
+        System.out.println("Order roles:");
+        System.out.println("Buyer: " + order.getBuyerPeerId());
+        System.out.println("Seller: " + order.getSellerPeerId());
+        System.out.println("Me: " + peerId);
 
         System.out.println("Applying event type: " + event.type());
         order.apply(event);
@@ -36,88 +58,143 @@ public class OrderService {
 
             case SERVICE_REQUEST -> {
                 if (isSeller(order)) {
-                    sendOrderAccepted(event);
+                    sendOrderAccepted(order);
                 }
             }
 
             case ORDER_ACCEPTED -> {
-                System.out.println("My peer id: " + peerId);
+                System.out.println("Order accepted triggered");
                 if (isBuyer(order)) {
-                    sendPayment(event);
-                } else {
-                    System.out.println("isBuyer is false");
+                    System.out.println("Accepted the order, proceeding to payment phase");
+                    requestPayment(order);
                 }
             }
 
-            case PAYMENT_SENT -> {
+            case PAYMENT_CONFIRMED -> {
                 if (isSeller(order)) {
-                    sendOrderCompleted(event);
+                    sendOrderCompleted(order);
                 }
+            }
+
+            default -> {
             }
         }
     }
 
-    private Order createOrderFromEvent(OrderEvent event) {
+    private Order createOrder(OrderEvent event) {
 
-        if (event.type() == OrderEvent.OrderEventType.SERVICE_REQUEST) {
-            return new Order(
-                    event.orderId(),
-                    event.fromPeerId(), // buyer
-                    event.toPeerId()    // seller
+        return switch (event.type()) {
+
+            case SERVICE_REQUEST ->
+                    new Order(
+                            event.orderId(),
+                            event.fromPeerId(), // buyer
+                            event.toPeerId()    // seller
+                    );
+
+            default ->
+                    new Order(
+                            event.orderId(),
+                            event.toPeerId(),   // buyer
+                            event.fromPeerId()  // seller
+                    );
+        };
+    }
+
+    private void sendOrderAccepted(Order order) {
+
+        try {
+            OrderAcceptedPayload payload = new OrderAcceptedPayload(
+                    "Accepted, preparing your order",
+                    walletService.getAddress(),
+                    "0.001"
             );
+
+            sendMessage(
+                    order.getBuyerPeerId(),
+                    "ORDER_ACCEPTED",
+                    order.getId(),
+                    payload
+            );
+
+            System.out.println("[Seller] Sent ORDER_ACCEPTED " + order.getId());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send ORDER_ACCEPTED", e);
         }
+    }
 
-        // fallback (should not really happen if flow is correct)
-        return new Order(
-                event.orderId(),
-                event.toPeerId(),
-                event.fromPeerId()
+    private void requestPayment(Order order) {
+
+        Payment payment = new Payment(
+                order.getId(),
+                walletService.getAddress(),
+                order.getSellerWalletAddress(),
+                order.getPriceWei()
         );
+
+        String txHash = paymentService.send(payment);
+
+        System.out.println("[Buyer] Payment submitted: " + txHash);
+
+        sendPaymentConfirmed(order, txHash);
     }
 
-    private void sendOrderAccepted(OrderEvent event) {
+    private void sendPaymentConfirmed(Order order, String txHash) {
 
-        String json = """
-                {
-                  "type": "ORDER_ACCEPTED",
-                  "orderId": "%s",
-                  "payload": "Accepted, preparing your order"
-                }
-                """.formatted(event.orderId());
+        try {
+            PaymentConfirmedPayload payload = new PaymentConfirmedPayload(
+                    "Payment sent",
+                    txHash
+            );
 
-        axlClient.send(event.fromPeerId(), json);
+            sendMessage(
+                    order.getSellerPeerId(),
+                    "PAYMENT_CONFIRMED",
+                    order.getId(),
+                    payload
+            );
 
-        System.out.println("[Seller] Sent ORDER_ACCEPTED " + event.orderId());
+            System.out.println("[Buyer] Sent PAYMENT_CONFIRMED " + order.getId());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send PAYMENT_CONFIRMED", e);
+        }
     }
 
-    private void sendPayment(OrderEvent event) {
+    private void sendOrderCompleted(Order order) {
 
-        String json = """
-                {
-                  "type": "PAYMENT_SENT",
-                  "orderId": "%s",
-                  "payload": "5 credits"
-                }
-                """.formatted(event.orderId());
+        try {
+            OrderCompletedPayload payload = new OrderCompletedPayload(
+                    "Order ready for pickup"
+            );
 
-        axlClient.send(event.fromPeerId(), json);
+            sendMessage(
+                    order.getBuyerPeerId(),
+                    "ORDER_COMPLETED",
+                    order.getId(),
+                    payload
+            );
 
-        System.out.println("[Buyer] Sent PAYMENT " + event.orderId());
+            System.out.println("[Seller] Sent ORDER_COMPLETED " + order.getId());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send ORDER_COMPLETED", e);
+        }
     }
 
-    private void sendOrderCompleted(OrderEvent event) {
+    private void sendMessage(String toPeerId,
+                             String type,
+                             String orderId,
+                             Object payload) throws Exception {
 
-        String json = """
-                {
-                  "type": "ORDER_COMPLETED",
-                  "orderId": "%s",
-                  "payload": "Order ready for pickup"
-                }
-                """.formatted(event.orderId());
+        String json = objectMapper.writeValueAsString(Map.of(
+                "type", type,
+                "orderId", orderId,
+                "payload", payload
+        ));
 
-        axlClient.send(event.fromPeerId(), json);
-
-        System.out.println("[Seller] Sent ORDER_COMPLETED " + event.orderId());
+        axlClient.send(toPeerId, json);
     }
 
     private boolean isBuyer(Order order) {

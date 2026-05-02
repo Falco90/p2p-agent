@@ -14,10 +14,21 @@ public class PaymentService {
         this.ethereumService = ethereumService;
     }
 
-    public String send(Payment payment, String toAddress, BigDecimal amountEth) throws Exception {
-        String txHash = ethereumService.sendEth(toAddress, amountEth);
-        payment.markSubmitted(txHash);
+    public String send(Payment payment) {
 
-        return txHash;
+        try {
+            String txHash = ethereumService.sendEth(
+                    payment.getToAddress(),
+                    payment.getAmountEth()
+            );
+
+            payment.markSubmitted(txHash);
+
+            return txHash;
+
+        } catch (Exception e) {
+            payment.markFailed();
+            throw new RuntimeException("Payment failed", e);
+        }
     }
 }
