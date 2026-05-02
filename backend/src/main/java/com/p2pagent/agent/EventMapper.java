@@ -13,7 +13,7 @@ public class EventMapper {
         this.localPeerId = properties.getPeerId();
     }
 
-    public OrderEvent toEvent(AgentMessage<?> msg) {
+    public <T> OrderEvent<T> toEvent(AgentMessage<T> msg) {
         return OrderEvent.fromAgentMessage(msg, localPeerId);
     }
 }
