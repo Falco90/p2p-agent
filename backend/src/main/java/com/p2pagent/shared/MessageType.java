@@ -5,6 +5,7 @@ public enum MessageType {
     QUOTE,
     ORDER_ACCEPTED,
     ORDER_COMPLETED,
+    CANCELLED,
     PAYMENT_SENT,
     PAYMENT_CONFIRMED,
     ORDER_STATUS,
