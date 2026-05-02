@@ -19,12 +19,13 @@ public class MessageRouter {
         this.chatService = chatService;
     }
 
-    public void route(AgentMessage msg) {
+    public void route(AgentMessage<?> msg) {
 
         switch (msg.type()) {
 
             case SERVICE_REQUEST,
                  PAYMENT_SENT,
+                 PAYMENT_CONFIRMED,
                  QUOTE,
                  ORDER_ACCEPTED,
                  ORDER_COMPLETED -> {

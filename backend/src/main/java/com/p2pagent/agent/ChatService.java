@@ -1,5 +1,6 @@
 package com.p2pagent.agent;
 
+import com.p2pagent.agent.payload.ChatPayload;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,11 +12,16 @@ public class ChatService {
 
     private final ConcurrentHashMap<String, List<ChatMessage>> chats = new ConcurrentHashMap<>();
 
-    public void handle(AgentMessage msg) {
+    public void handle(AgentMessage<?> msg) {
+
+        if (!(msg.payload() instanceof ChatPayload(String message))) {
+            System.out.println("Invalid chat payload: " + msg.payload());
+            return;
+        }
 
         ChatMessage chat = new ChatMessage(
                 msg.fromPeerId(),
-                msg.payload(),
+                message,
                 System.currentTimeMillis()
         );
 
