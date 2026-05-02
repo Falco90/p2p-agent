@@ -49,7 +49,7 @@ public class AxlListener {
         System.out.println("From: " + axlMessage.fromPeerId());
         System.out.println("Body: " + axlMessage.body());
 
-        AgentMessage agentMessage = messageParser.parse(
+        AgentMessage<?> agentMessage = messageParser.parse(
                 axlMessage.body(),
                 axlMessage.fromPeerId()
         );
