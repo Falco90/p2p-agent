@@ -1,8 +1,7 @@
 package com.p2pagent.order;
 
-import com.p2pagent.order.payload.OrderAcceptedPayload;
-import com.p2pagent.order.payload.ServiceRequestPayload;
-import com.p2pagent.order.payload.PaymentConfirmedPayload;
+import com.p2pagent.order.payload.*;
+import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,8 +17,7 @@ public class Order {
 
     private String item;
     private int quantity;
-
-    private BigDecimal priceEth;
+    private BigInteger priceWei;
     private String sellerWalletAddress;
     private String txHash;
 
@@ -35,29 +33,21 @@ public class Order {
         this.updatedAt = Instant.now();
     }
 
-    public void apply(OrderEvent event) {
+    public void apply(OrderEvent<?> event) {
 
         switch (event.type()) {
 
-            case SERVICE_REQUEST -> {
-                ServiceRequestPayload p = (ServiceRequestPayload) event.payload();
-                this.item = p.item();
-                this.quantity = p.quantity();
-                setState(OrderState.QUOTED);
-            }
+            case SERVICE_REQUEST -> handleServiceRequest(
+                    (ServiceRequestPayload) event.payload()
+            );
 
-            case ORDER_ACCEPTED -> {
-                OrderAcceptedPayload p = (OrderAcceptedPayload) event.payload();
-                this.sellerWalletAddress = p.paymentAddress();
-                this.priceEth = new BigDecimal(p.priceEth());
-                setState(OrderState.ACCEPTED);
-            }
+            case ORDER_ACCEPTED -> handleOrderAccepted(
+                    (OrderAcceptedPayload) event.payload()
+            );
 
-            case PAYMENT_CONFIRMED -> {
-                PaymentConfirmedPayload p = (PaymentConfirmedPayload) event.payload();
-                this.txHash = p.txHash();
-                setState(OrderState.PAID);
-            }
+            case PAYMENT_CONFIRMED -> handlePaymentConfirmed(
+                    (PaymentConfirmedPayload) event.payload()
+            );
 
             case ORDER_COMPLETED -> setState(OrderState.COMPLETED);
 
@@ -65,26 +55,75 @@ public class Order {
         }
     }
 
+    private void handleServiceRequest(ServiceRequestPayload payload) {
+        this.item = payload.item();
+        this.quantity = payload.quantity();
+        setState(OrderState.QUOTED);
+    }
+
+    private void handleOrderAccepted(OrderAcceptedPayload payload) {
+        this.sellerWalletAddress = payload.sellerWalletAddress();
+        this.priceWei = Convert.toWei(
+                payload.priceEth(),
+                Convert.Unit.ETHER
+        ).toBigInteger();
+
+        setState(OrderState.ACCEPTED);
+    }
+
+    private void handlePaymentConfirmed(PaymentConfirmedPayload payload) {
+        this.txHash = payload.txHash();
+        setState(OrderState.PAID);
+    }
+
     private void setState(OrderState newState) {
         this.state = newState;
         this.updatedAt = Instant.now();
     }
 
-    public BigInteger getPriceWei() {
-        return priceEth == null
-                ? BigInteger.ZERO
-                : priceEth.movePointRight(18).toBigInteger();
+    public String getId() {
+        return id;
     }
 
-    public String getId() { return id; }
-    public String getBuyerPeerId() { return buyerPeerId; }
-    public String getSellerPeerId() { return sellerPeerId; }
-    public OrderState getState() { return state; }
-    public String getItem() { return item; }
-    public int getQuantity() { return quantity; }
-    public BigDecimal getPriceEth() { return priceEth; }
-    public String getSellerWalletAddress() { return sellerWalletAddress; }
-    public String getTxHash() { return txHash; }
+    public String getBuyerPeerId() {
+        return buyerPeerId;
+    }
+
+    public String getSellerPeerId() {
+        return sellerPeerId;
+    }
+
+    public OrderState getState() {
+        return state;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public BigInteger getPriceWei() {
+        return priceWei;
+    }
+
+    public String getSellerWalletAddress() {
+        return sellerWalletAddress;
+    }
+
+    public String getTxHash() {
+        return txHash;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 
     public enum OrderState {
         NEW,
