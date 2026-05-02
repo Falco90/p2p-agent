@@ -1,17 +1,19 @@
 package com.p2pagent.axl;
-import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConfigurationProperties(prefix = "axl")
 public class AxlProperties {
 
-    private final String peerId;
-
-    public AxlProperties(@Value("${axl.peerId}") String peerId) {
-        this.peerId = peerId;
-    }
+    private String peerId;
 
     public String getPeerId() {
         return peerId;
+    }
+
+    public void setPeerId(String peerId) {
+        this.peerId = peerId;
     }
 }
