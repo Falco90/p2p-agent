@@ -1,5 +1,6 @@
 package com.p2pagent.web3;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -18,7 +19,7 @@ public class EthereumService {
     private final Web3j web3j;
     private final WalletService walletService;
 
-    public EthereumService(Web3j web3j, WalletService walletService) {
+    public EthereumService(@Qualifier("paymentWeb3j")Web3j web3j, WalletService walletService) {
         this.web3j = web3j;
         this.walletService = walletService;
     }

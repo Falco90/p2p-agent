@@ -2,6 +2,7 @@ package com.p2pagent.ens;
 
 import com.p2pagent.ens.contract.EnsRegistry;
 import com.p2pagent.ens.contract.EnsResolver;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ import org.web3j.tx.gas.DefaultGasProvider;
 public class EnsConfig {
 
     @Bean
-    public EnsRegistry ensRegistry(Web3j web3j,
+    public EnsRegistry ensRegistry(@Qualifier("ensWeb3j") Web3j web3j,
                                    Credentials rootCredentials,
                                    @Value("${ens.registry.address}") String address) {
 
@@ -26,7 +27,7 @@ public class EnsConfig {
     }
 
     @Bean
-    public EnsResolver ensResolver(Web3j web3j,
+    public EnsResolver ensResolver(@Qualifier("ensWeb3j") Web3j web3j,
                                    Credentials rootCredentials,
                                    @Value("${ens.resolver.address}") String address) {
 
