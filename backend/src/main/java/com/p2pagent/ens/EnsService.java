@@ -118,10 +118,6 @@ public class EnsService {
         return getText(ensName, "peerId");
     }
 
-    public String resolveService(String ensName) {
-        return getText(ensName, "services");
-    }
-
     public String resolveRole(String ensName) {
         return getText(ensName, "role");
     }
