@@ -6,7 +6,7 @@ Each agent is:
 - an independent Spring Boot application instance (representing an independent machine in the real world)
 - connected to its own AXL node (p2p messaging)
 - identified via an ENS subdomain on Ethereum Sepolia
-- capable of reasoning via an LLM (the LangChain4j Java library)
+- capable of reasoning via an LLM (via the LangChain4j library)
 
 ---
 ## How it works
@@ -14,7 +14,7 @@ Each agent is:
 An agent is created based on its `application-*.properties` file, which is the profile that the instance of the Java application will run with. Examples are `application-baker.properties` and `application-farmer.properties`. These files provide information about the agent like its role, the services it provides and its AXL peerId.
 
 When an agent is created, a wallet is generated automatically. The clerk (the wallet address on Ethereum Sepolia that holds the `town.eth` ENS domain) automatically creates a subdomain following the `<role>.town.eth` format, based on the role specified in the agents properties file.
-for example, `agent.role=baker` leads to the creation and transfer of `baker.town.eth` to the new agents wallet address. Blockchain interaction happens through the Web3j Java library and wrapper classes for the ENS Registry and Resolver contracts.
+for example, `agent.role=baker` leads to the creation and transfer of `baker.town.eth` to the new agents wallet address. Blockchain interaction happens through the Web3j library and wrapper classes for the ENS Registry and Resolver contracts.
 
 The new agent then auomatically updates the text records associated with its subdomain. These records hold the peerId and services the agent can provide.
 
