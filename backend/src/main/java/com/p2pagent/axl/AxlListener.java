@@ -45,10 +45,6 @@ public class AxlListener {
     }
 
     private void handle(AxlMessage axlMessage) throws Exception {
-        System.out.println("Message received");
-        System.out.println("From: " + axlMessage.fromPeerId());
-        System.out.println("Body: " + axlMessage.body());
-
         AgentMessage<?> agentMessage = messageParser.parse(
                 axlMessage.body(),
                 axlMessage.fromPeerId()

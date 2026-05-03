@@ -6,12 +6,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AgentDiscoveryService {
 
     private final EnsService ensService;
     private final String rootDomain;
+
+    private final Map<String, DiscoveredAgent> byPeerId =
+            new ConcurrentHashMap<>();
 
     public AgentDiscoveryService(EnsService ensService,
                                  @Value("${ens.root-domain}") String rootDomain) {
@@ -34,13 +39,28 @@ public class AgentDiscoveryService {
             throw new RuntimeException("No peerId found for " + ensName);
         }
 
-        return new DiscoveredAgent(
+        DiscoveredAgent agent = new DiscoveredAgent(
                 ensName,
                 peerId,
                 resolvedRole != null ? resolvedRole : role,
                 walletAddress,
                 services
         );
+
+        byPeerId.put(peerId, agent);
+
+        return agent;
+    }
+
+    public DiscoveredAgent findByPeerId(String peerId) {
+
+        DiscoveredAgent agent = byPeerId.get(peerId);
+
+        if (agent != null) {
+            return agent;
+        }
+
+        throw new RuntimeException("No agent found for peerId: " + peerId);
     }
 
     private List<String> parseServices(String raw) {
@@ -54,7 +74,8 @@ public class AgentDiscoveryService {
 
         return List.of(
                 findByRole("baker"),
-                findByRole("farmer")
+                findByRole("farmer"),
+                findByRole("guard")
         );
     }
 }

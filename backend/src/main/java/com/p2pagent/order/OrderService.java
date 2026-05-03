@@ -54,8 +54,6 @@ public class OrderService {
                 id -> createOrder(event)
         );
 
-        logRoles(order);
-
         System.out.println("Applying event: " + event.type());
 
         order.apply(event);

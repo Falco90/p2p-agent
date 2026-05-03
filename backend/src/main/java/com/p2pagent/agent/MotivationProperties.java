@@ -7,24 +7,10 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "agent.motivation")
 public class MotivationProperties {
 
-    /**
-     * Example:
-     * agent.motivation.stock.flour=10
-     * agent.motivation.stock.wheat=8
-     */
     private Map<String, Integer> stock;
 
-    /**
-     * Example:
-     * agent.motivation.threshold.flour=3
-     * agent.motivation.threshold.wheat=2
-     */
     private Map<String, Integer> threshold;
 
-    /**
-     * Example:
-     * agent.motivation.threat.level=5
-     */
     private Integer threatLevel;
 
     public Map<String, Integer> getStock() {
