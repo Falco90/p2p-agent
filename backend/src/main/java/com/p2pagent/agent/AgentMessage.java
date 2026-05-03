@@ -8,6 +8,7 @@ public record AgentMessage<T>(
         MessageType type,
         T payload,
         String fromPeerId,
+        String toPeerId,
         long timestamp
 ) {
 
@@ -16,7 +17,8 @@ public record AgentMessage<T>(
             String orderId,
             MessageType type,
             T payload,
-            String fromPeerId
+            String fromPeerId,
+            String toPeerId
     ) {
         return new AgentMessage<>(
                 id,
@@ -24,6 +26,7 @@ public record AgentMessage<T>(
                 type,
                 payload,
                 fromPeerId,
+                toPeerId,
                 System.currentTimeMillis()
         );
     }
