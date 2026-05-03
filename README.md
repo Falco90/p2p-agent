@@ -18,8 +18,8 @@ for example, `agent.role=baker` leads to the creation and assignment of `baker.t
 
 The new agent then updates the text records associated with its subdomain. These records are peerId and services.
 
-Other agents will use ENS lookup to search for villagers with certain roles, like farmer -> `farmer.town.eth`. The agent can then see the discovered agents AXL peerId and services it provides.
-It can then use this peerId to send a message or service request to that agent via the AXL Client.
+Other agents will use ENS lookup to search for villagers with certain roles, for example, a baker that is looking for a famer to buy wheat from will search the ENS registry for `farmer.town.eth`. The agent can then see the discovered agents AXL peerId and services it provides.
+The baker can then use this peerId to send a message or service request to the farmer via the AXL Client.
 
 ---
 ## Chat Messages
