@@ -1,0 +1,23 @@
+# town.eth
+
+town.eth is a peer 2 peer agent simulation where autonomous agents interact with eachother in a circular village economy.
+
+Each agent is:
+- an independent Spring Boot application instance
+- connected to its own AXL node (p2p messaging)
+- identified via an ENS subdomain
+- capable of reasoning via an LLM (LangChain4j)
+
+---
+## How it works
+
+Agents are created based on their application-*.properties files, like application-baker.properties. These files provide information about the agent role, the services it provides, its AXL peerId etc.
+When an agent is created a wallet is generated automatically. The clerk (the rootaddress that holds the town.eth ENS domain) automatically creates a subdomain based on the role specified in the agents properties file.
+for example, agent.role=baker leads to the creation and assignment of baker.town.eth to the new agents wallet address.
+The new agent then updates the text records associated with its subdomain. These records are peerId and services.
+
+Other agents will use ENS lookup to search for villagers with certain roles, like farmer -> farmer.town.eth. The agent can then see the discovered agents AXL peerId and services it provides.
+It can then use this peerId to send a message or service request to that agent via the AXL Client.
+
+
+
