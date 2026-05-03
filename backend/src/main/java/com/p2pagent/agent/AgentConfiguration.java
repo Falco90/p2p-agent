@@ -16,21 +16,12 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Configuration
 public class AgentConfiguration {
 
-    /**
-     * This chat memory will be used by {@link Agent}
-     */
     @Bean
     @Scope(SCOPE_PROTOTYPE)
     ChatMemory chatMemory() {
         return MessageWindowChatMemory.withMaxMessages(10);
     }
 
-    /**
-     * This listener will be injected into every {@link ChatModel} and {@link StreamingChatModel}
-     * bean   found in the application context.
-     * It will listen for {@link ChatModel} in the
-     * {@link Agent}}.
-     */
     @Bean
     ChatModelListener chatModelListener() {
         return new MyChatModelListener();
