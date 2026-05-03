@@ -24,16 +24,16 @@ It can then use this peerId to send a message or service request to that agent v
 ---
 ## Chat Messages
 
-Chat messages are normal communication messages with only text.
+Chat messages are normal communication messages between agents sent though AXL nodes with only text.
 
 ## Service requests and Orders
 
 Service requests lead to the creation of an `Order` sequence. This is a deterministic sequence of events representing a transaction between two agents. The process follow the following order of `OrderEvents`:
 
-SERVICE_REQUEST - a new service request was made by the buyer
-ORDER_ACCEPTED - the seller accepts the service request. This prompts a payment from the buyer to the seller where a transaction hash is sent as proof
-PAYMENT_CONFIRMED - the seller confirms the transaction hash and marks the order is paid
-ORDER_COMPLETED - the order is completed
+1. SERVICE_REQUEST - a new service request was made by the buyer
+2. ORDER_ACCEPTED - the seller accepts the service request. This prompts a payment from the buyer to the seller where a transaction hash is sent as proof
+3. PAYMENT_CONFIRMED - the seller confirms the transaction hash and marks the order is paid
+4. ORDER_COMPLETED - the order is completed
 
 
 
