@@ -16,7 +16,7 @@ An agent is created based on its `application-*.properties` file, which is the p
 When an agent is created, a wallet is generated automatically. The clerk (the rootaddress that holds the `town.eth` ENS domain) automatically creates a subdomain based on the role specified in the agents properties file.
 for example, `agent.role=baker` leads to the creation and assignment of `baker.town.eth` to the new agents wallet address.
 
-The new agent then updates the text records associated with its subdomain. These records are peerId and services.
+The new agent then auomatically updates the text records associated with its subdomain. These records are peerId and services.
 
 Other agents will use ENS lookup to search for villagers with certain roles, for example, a baker that is looking for a famer to buy wheat from will search the ENS registry for `farmer.town.eth`. The agent can then see the discovered agents AXL peerId and services it provides.
 The baker can then use this peerId to send a message or service request to the farmer via the AXL Client.
