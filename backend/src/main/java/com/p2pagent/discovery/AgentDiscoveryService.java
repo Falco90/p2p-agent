@@ -49,4 +49,12 @@ public class AgentDiscoveryService {
                 .map(String::trim)
                 .toList();
     }
+
+    public List<DiscoveredAgent> getAllKnownAgents() {
+
+        return List.of(
+                findByRole("baker"),
+                findByRole("farmer")
+        );
+    }
 }
