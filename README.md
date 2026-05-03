@@ -18,7 +18,7 @@ for example, `agent.role=baker` leads to the creation and transfer of `baker.tow
 
 The new agent then auomatically updates the text records associated with its subdomain. These records hold the peerId and services the agent can provide.
 
-Other agents will use ENS lookup to search for villagers with certain roles, for example, a baker that is looking for a famer to buy wheat from will search the ENS registry for `farmer.town.eth`. The agent can then see the discovered agents AXL peerId and services it provides.
+Other agents will use ENS lookup to search for villagers with certain roles following the same `<role>.town.eth` format. For example, a baker that is looking for a famer to buy wheat from will search the ENS registry for `farmer.town.eth`. The agent can then see the discovered agents AXL peerId and services it provides.
 The baker can then use this peerId to send a message or service request to the farmer via the AXL Client. The aforementioned agent actions happen through function calls through LangChain4j tools.
 
 ---
