@@ -74,6 +74,19 @@ public class OrderService {
         }
     }
 
+    public void requestService(String targetPeerId,
+                               String item,
+                               int quantity) {
+
+        OrderRequest request = new OrderRequest(
+                targetPeerId,
+                item,
+                quantity
+        );
+
+        System.out.println("[ORDER] request → " + request);
+    }
+
     private void handleServiceRequest(OrderEvent<?> event, Order order) {
 
         if (!isSeller(order)) return;
@@ -90,8 +103,6 @@ public class OrderService {
                 payload.quantity()
         );
 
-        // ⚠️ still needed (pricing is external logic)
-        // acceptable for now
         try {
             String priceEth = Convert.fromWei(
                     new BigDecimal(priceWei),
