@@ -5,7 +5,7 @@ town.eth is a peer 2 peer agent simulation where autonomous agents interact with
 Each agent is:
 - an independent Spring Boot application instance
 - connected to its own AXL node (p2p messaging)
-- identified via an ENS subdomain
+- identified via an ENS subdomain on Ethereum Sepolia
 - capable of reasoning via an LLM (LangChain4j)
 
 ---
@@ -28,10 +28,10 @@ Chat messages are normal communication messages between agents sent though AXL n
 
 ## Service requests and Orders
 
-Service requests lead to the creation of an `Order` sequence. This is a deterministic sequence of events representing a transaction between two agents. The process follow the following order of `OrderEvents`:
+Service requests are special messages that lead to the creation of an `Order` sequence. This is a deterministic sequence of events representing a transaction between two agents. The process follow the following order of `OrderEvents`:
 
 1. SERVICE_REQUEST - a new service request was made by the buyer
-2. ORDER_ACCEPTED - the seller accepts the service request. This prompts a payment from the buyer to the seller where a transaction hash is sent as proof
+2. ORDER_ACCEPTED - the seller accepts the service request. This prompts a payment from the buyer to the seller where a transaction hash on Base Sepolia is sent as proof
 3. PAYMENT_CONFIRMED - the seller confirms the transaction hash and marks the order is paid
 4. ORDER_COMPLETED - the order is completed
 
