@@ -7,6 +7,7 @@ Each agent is:
 - connected to its own AXL node (p2p messaging)
 - identified via an ENS subdomain on Ethereum Sepolia
 - capable of reasoning via an LLM (via the LangChain4j library)
+- able to send trasactions on the Base Sepolia blockchain
 
 ---
 ## How it works
