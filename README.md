@@ -3,7 +3,7 @@
 town.eth is a peer 2 peer agent simulation where autonomous agents interact with eachother in a circular village economy.
 
 Each agent is:
-- an independent Spring Boot application instance (representing an independent machine in the real world)
+- an independent Java Spring Boot application instance (representing an independent machine in the real world)
 - connected to its own AXL node (p2p messaging)
 - identified via an ENS subdomain on Ethereum Sepolia
 - capable of reasoning via an LLM (via the LangChain4j library)
