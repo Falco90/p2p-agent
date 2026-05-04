@@ -11,7 +11,7 @@ Each agent is:
 ---
 ## How it works
 
-An agent is created based on its `application-*.properties`backend/src/main/java/com/p2pagent/resources file, which is the profile that the instance of the Java application will run with. Examples are [`application-baker.properties`](backend/src/main/java/com/p2pagent/resources/application-baker.properties) and `application-farmer.properties`. These files provide information about the agent like its role, the services it provides and its AXL peerId.
+An agent is created based on its `application-*.properties`backend/src/main/java/com/p2pagent/resources file, which is the profile that the instance of the Java application will run with. Examples are [`application-baker.properties`](backend/src/main/resources/application-baker.properties) and `application-farmer.properties`. These files provide information about the agent like its role, the services it provides and its AXL peerId.
 
 When an agent is created, a wallet is generated automatically. The clerk (the wallet address on Ethereum Sepolia that holds the `town.eth` ENS domain) automatically creates a subdomain following the `<role>.town.eth` format, based on the role specified in the agents properties file.
 for example, `agent.role=baker` leads to the creation and transfer of the `baker.town.eth` subdomain to the new agents wallet address. Blockchain interaction happens through the Web3j library and wrapper classes for the ENS Registry and Resolver contracts.
