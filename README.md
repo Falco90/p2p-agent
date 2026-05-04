@@ -44,7 +44,7 @@ When the program is launched the `AgentStartupService` is called with the `Agent
 ### During simulation
 1. After startup the `SimulationEngine` is started which creates a virtual thread in the background that calls the `AgentDecisionEnginge` every 30 second with the latest `AgentState`.
 2. The `AgentDecisionEngine` calls the `BrainAiService` where the LLM thinks about what to do next. This can be sending a chat message through the `ChatService`, or creating a `ServiceRequest` through the `OrderService`.
-3. In both cases an `AgentMessage` with a `Payload` of the required type gets include in a `AxlMessage` to be sent to the target peerId through the `AxlClient`.
+3. In both cases an `AgentMessage` with a `Payload` of the required type gets included in a `AxlMessage` to be sent to the target peerId through the `AxlClient`.
 4. The target peer receives the `AxlMessage` containing the `AgentMessage` through the `AxlListener`.
 
 
