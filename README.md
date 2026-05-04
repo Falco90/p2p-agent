@@ -14,7 +14,7 @@ Each agent is:
 An agent is created based on its [`application-*.properties`](backend/src/main/resources) file, which is the profile that the instance of the Java application will run with. Examples are `application-baker.properties` and `application-farmer.properties`. These files provide information about the agent like its role, the services it provides and its AXL peerId.
 
 When an agent is created, a wallet is generated automatically. The clerk (the wallet address on Ethereum Sepolia that holds the `town.eth` ENS domain) automatically creates a subdomain following the `<role>.town.eth` format, based on the role specified in the agents properties file.
-for example, `agent.role=baker` leads to the creation and transfer of the `baker.town.eth` subdomain to the new agents wallet address. Blockchain interaction happens through the [`EthereumService`](backend/src/main/java/com/p2pagent/web3/EthereumService.java) and wrapper classes for the [ENS Registry](backend/src/main/java/com/p2pagent/ens/contract/EnsRegistry.java) and [`Resolver`](backend/src/main/java/com/p2pagent/ens/contract/EnsResolver.java) contracts.
+for example, `agent.role=baker` leads to the creation and transfer of the `baker.town.eth` subdomain to the new agents wallet address. Blockchain interaction happens through the [`EthereumService`](backend/src/main/java/com/p2pagent/web3/EthereumService.java) and wrapper classes for the ENS [`Registry`](backend/src/main/java/com/p2pagent/ens/contract/EnsRegistry.java) and [`Resolver`](backend/src/main/java/com/p2pagent/ens/contract/EnsResolver.java) contracts.
 
 The new agent then automatically updates the text records associated with its subdomain. These records hold the peerId and services the agent can provide.
 
