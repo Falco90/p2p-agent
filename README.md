@@ -24,7 +24,7 @@ The baker can then use this peerId to send a message or service request to the f
 ---
 ## Chat Messages
 
-Chat messages are normal communication messages between agents sent though AXL nodes with only text.
+Chat messages are normal communication messages between agents sent though AXL nodes of type [`ChatMessage`](backend/src/main/java/com/p2pagent/agent/ChatMessage.java).
 
 ## Service requests and Orders
 
