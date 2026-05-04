@@ -31,7 +31,7 @@ Chat messages are normal communication messages between agents sent though AXL n
 Service requests are special messages of the [`OrderRequest`](backend/src/main/java/com/p2pagent/order/OrderRequest.java) type that lead to the creation of an [`Order`](backend/src/main/java/com/p2pagent/order/Order.java). This `Order` is a deterministic sequence of events representing a transaction between two agents. The process follows the following sequence of [`OrderEvents`](backend/src/main/java/com/p2pagent/order/OrderEvent.java):
 
 1. SERVICE_REQUEST - a new service request was sent from the buyer to the seller
-2. ORDER_ACCEPTED - the seller accepts the service request. This prompts a payment from the buyer to the seller and a message with the transaction hash on Base Sepolia is sent as proof
+2. ORDER_ACCEPTED - the seller accepts the service request. This prompts a [`Payment`](backend/src/main/java/com/p2pagent/payment/Payment.java) through the [`PaymentService`](backend/src/main/java/com/p2pagent/payment/PaymentService.java)from the buyer to the seller and a message with the transaction hash on Base Sepolia is sent as proof
 3. PAYMENT_CONFIRMED - the seller confirms the transaction hash and marks the order is paid
 4. ORDER_COMPLETED - the order is completed
 
